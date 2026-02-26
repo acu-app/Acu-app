@@ -1,0 +1,17 @@
+{
+  "sheet_activos": "InputActivos",
+  "sheet_resumen": "Resumen",
+  "required_columns": [
+    "Activo",
+    "Tipo",
+    "Pais",
+    "ISO",
+    "Valor en USD",
+    "Peso",
+    "ScoreActivoFinal",
+    "VolatilidadFinal",
+    "CountryContextScore"
+  ],
+  "top_n": 10
+}
+

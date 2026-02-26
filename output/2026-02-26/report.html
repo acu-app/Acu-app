@@ -1,0 +1,91 @@
+
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Reporte de Cartera</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial; margin: 24px; color: #111; }
+        .header { display:flex; justify-content:space-between; align-items:flex-end; border-bottom:1px solid #ddd; padding-bottom:12px; }
+        .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+        .card { border:1px solid #e5e5e5; border-radius:12px; padding:14px; }
+        .kpi { font-size: 26px; font-weight: 700; }
+        .label { color:#666; font-size: 12px; }
+        h2 { margin-top: 26px; }
+        table { width:100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #eee; padding: 8px; text-align:left; font-size: 13px; }
+        ul { margin: 8px 0 0 18px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="label">Reporte de Cartera</div>
+          <h1 style="margin:6px 0 0 0;">Diagnóstico + Recomendaciones</h1>
+          <div class="label">Perfil considerado: <b>Moderada</b></div>
+        </div>
+        <div class="label">Generado: 2026-02-26 14:51</div>
+      </div>
+
+      <div class="grid">
+        <div class="card"><div class="label">Volatilidad promedio</div><div class="kpi">19.2%</div></div>
+        <div class="card"><div class="label">Score promedio</div><div class="kpi">65.5</div></div>
+        <div class="card"><div class="label">Concentración Top 3</div><div class="kpi">88%</div></div>
+        <div class="card"><div class="label">Concentración Top 1</div><div class="kpi">50%</div></div>
+        <div class="card"><div class="label">Índice Herfindahl</div><div class="kpi">0.34</div></div>
+      </div>
+
+      <h2>Alertas</h2>
+      <div class="card"><ul><li>Concentración alta en un activo (Top1 50% > 25%).</li><li>Cartera dominada por Top3 (Top3 88% > 55%).</li><li>Volatilidad 19.2% alta para perfil Moderada (umbral 18.0%).</li><li>Diversificación baja (HHI 34% > 18%).</li><li>Concentración geográfica alta en Argentina (65% > 60%).</li></ul></div>
+
+      <h2>Recomendaciones</h2>
+      <div class="card"><ul><li><b>Reducir concentración del principal activo</b>: Bajar Dept Palermo de 50% a 25% y redistribuir el excedente en el resto.</li><li><b>Bajar dominancia del Top 3</b>: Reducir peso de los 2 activos más grandes para llevar Top3 a ~55% y redistribuir al resto.</li></ul></div>
+
+      <h2>Exposición</h2>
+      <div class="grid">
+        
+        <div class="card">
+          <h3>Exposición por País</h3>
+          <table>
+            <thead><tr><th>Categoria</th><th>Peso</th></tr></thead>
+            <tbody><tr><td>Argentina</td><td>65%</td></tr><tr><td>USA</td><td>35%</td></tr></tbody>
+          </table>
+        </div>
+        
+        
+        <div class="card">
+          <h3>Exposición por Tipo</h3>
+          <table>
+            <thead><tr><th>Categoria</th><th>Peso</th></tr></thead>
+            <tbody><tr><td>Inmueble</td><td>50%</td></tr><tr><td>ETF</td><td>25%</td></tr><tr><td>Renta fija</td><td>13%</td></tr><tr><td>Cash</td><td>10%</td></tr><tr><td>Acciones</td><td>2%</td></tr></tbody>
+          </table>
+        </div>
+        
+      </div>
+
+      <h2>Top holdings</h2>
+      <div class="card">
+        <table>
+          <thead><tr><th>Activo</th><th>Tipo</th><th>País</th><th>Peso</th><th>Vol</th></tr></thead>
+          <tbody>
+            <tr><td>Dept Palermo</td><td>Inmueble</td><td>Argentina</td><td>50%</td><td>22.2%</td></tr><tr><td>ETF SP500</td><td>ETF</td><td>USA</td><td>25%</td><td>19.3%</td></tr><tr><td>AL30</td><td>Renta fija</td><td>Argentina</td><td>13%</td><td>19.2%</td></tr><tr><td>Cash USD</td><td>Cash</td><td>USA</td><td>8%</td><td>2.3%</td></tr><tr><td>Cash pesos </td><td>Cash</td><td>Argentina</td><td>2%</td><td>9.2%</td></tr><tr><td>Acciones Nvidia</td><td>Acciones</td><td>USA</td><td>2%</td><td>26.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Escenarios (sensibilidad)</h2>
+      <div class="card">
+        <table>
+          <thead><tr><th>Escenario</th><th>Vol after</th><th>Top3 after</th><th>HHI after</th></tr></thead>
+          <tbody>
+            <tr><td>Risk-off (Vol +30%)</td><td>25.0%</td><td>0.88</td><td>0.34</td></tr><tr><td>Shock Argentina (Vol ARG +40%)</td><td>24.8%</td><td>0.88</td><td>0.34</td></tr><tr><td>Shock USA (Vol USA +20%)</td><td>20.3%</td><td>0.88</td><td>0.34</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="label" style="margin-top:22px;">
+        Nota: Diagnóstico automático basado en reglas. No constituye recomendación de inversión.
+      </div>
+    </body>
+    </html>
+    
