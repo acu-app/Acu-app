@@ -1,5 +1,6 @@
 import json
 import streamlit as st
+from profile_report_html import generate_profile_html
 
 st.set_page_config(page_title="Cuestionario de Perfil", layout="centered")
 st.title("Cuestionario de Perfil de Inversión")
@@ -60,5 +61,17 @@ st.download_button(
     file_name="perfil_cliente.json",
     mime="application/json"
 )
+# ---- HTML descargable (para el cliente) ----
+html_report = generate_profile_html(result_payload)
+
+st.download_button(
+    "⬇️ Descargar perfil en formato presentable (HTML)",
+    data=html_report,
+    file_name="perfil_cliente.html",
+    mime="text/html"
+)
+
+st.info("Para generar PDF: abrí el HTML descargado y presioná Ctrl+P (⌘+P en Mac) → Guardar como PDF.")
+
 
 st.caption("Privacidad: este cuestionario no constituye recomendación de inversión. El asesor interpretará el resultado junto con la cartera.")
