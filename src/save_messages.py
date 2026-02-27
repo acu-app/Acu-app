@@ -1,6 +1,6 @@
 import os
 import json
-from src.narrative_v1 import build_client_messages
+from narrative_v1 import build_client_messages
 
 
 def save_messages_from_analysis_json(analysis_json_path: str) -> None:
