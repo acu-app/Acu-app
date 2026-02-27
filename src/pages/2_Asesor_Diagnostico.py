@@ -16,9 +16,8 @@ st.caption("Acceso restringido. Subí el Excel del cliente y generá el reporte 
 
 # ---- Password gate ----
 st.sidebar.subheader("Acceso")
-pwd = st.sidebar.text_input("Contraseña del asesor", type="password")
-
-ADVISOR_PASSWORD = st.secrets.get("ADVISOR_PASSWORD", None)
+pwd = (st.sidebar.text_input("Contraseña del asesor", type="password") or "").strip()
+ADVISOR_PASSWORD = (st.secrets.get("ADVISOR_PASSWORD", "") or "").strip()
 
 if ADVISOR_PASSWORD is None:
     st.error("Falta configurar ADVISOR_PASSWORD en Streamlit Secrets.")
