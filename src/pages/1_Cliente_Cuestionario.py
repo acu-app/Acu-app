@@ -1,6 +1,6 @@
 import json
 import streamlit as st
-from src.profile_report_html import generate_profile_html
+from profile_report_html import generate_profile_html
 
 st.set_page_config(page_title="Cuestionario de Perfil", layout="centered")
 st.title("Cuestionario de Perfil de Inversión")
