@@ -15,7 +15,11 @@ from src.engine_v1 import run_analysis
 from src.save_messages import save_messages_from_analysis_json
 from src.report_html import generate_html_report
 from src.narrative_v1 import build_client_messages
+def load_css():
+    with open("src/styles.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+load_css()
 
 st.set_page_config(page_title="ACU - Diagnóstico de Cartera", layout="wide")
 

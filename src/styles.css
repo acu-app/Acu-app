@@ -1,0 +1,47 @@
+/* Fondo general */
+.stApp {
+    background: linear-gradient(180deg, #ffffff 0%, #f4f6f9 100%);
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #0F172A;
+}
+
+section[data-testid="stSidebar"] * {
+    color: white !important;
+}
+
+/* Cards visuales */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Botones */
+.stButton>button {
+    background-color: #1E293B;
+    color: white;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+    font-weight: 500;
+}
+
+.stButton>button:hover {
+    background-color: #334155;
+}
+
+/* Métricas */
+[data-testid="stMetric"] {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Subheaders */
+h2 {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
