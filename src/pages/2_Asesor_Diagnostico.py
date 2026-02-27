@@ -2,7 +2,7 @@ import os
 import json
 import tempfile
 import streamlit as st
-from src.ai_interpretation import interpretacion_basica
+from ai_interpretation import interpretacion_basica
 # IMPORTS de tu proyecto (como ya los venías usando en cloud)
 from io_excel import read_portfolio_excel, write_analysis_json
 from engine_v1 import run_analysis
