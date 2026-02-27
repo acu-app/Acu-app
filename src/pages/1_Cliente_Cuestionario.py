@@ -1,7 +1,8 @@
 import json
 import streamlit as st
 from profile_report_html import generate_profile_html
-
+from src.ui import load_css
+load_css()
 st.set_page_config(page_title="Cuestionario de Perfil", layout="centered")
 st.title("Cuestionario de Perfil de Inversión")
 st.caption("Completá este cuestionario. Al final vas a poder descargar el resultado para enviárselo a tu asesor.")

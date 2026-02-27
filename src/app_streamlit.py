@@ -9,7 +9,8 @@ import os
 import tempfile
 import json
 import streamlit as st
-
+from src.ui import load_css
+load_css()
 from src.io_excel import read_portfolio_excel, write_analysis_json
 from src.engine_v1 import run_analysis
 from src.save_messages import save_messages_from_analysis_json
