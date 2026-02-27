@@ -16,17 +16,23 @@ st.caption("Acceso restringido. Subí el Excel del cliente y generá el reporte 
 
 # ---- Password gate ----
 st.sidebar.subheader("Acceso")
+
 pwd = (st.sidebar.text_input("Contraseña del asesor", type="password") or "").strip()
 ADVISOR_PASSWORD = (st.secrets.get("ADVISOR_PASSWORD", "") or "").strip()
 
-if ADVISOR_PASSWORD is None:
+if ADVISOR_PASSWORD == "":
     st.error("Falta configurar ADVISOR_PASSWORD en Streamlit Secrets.")
     st.stop()
 
-if pwd != ADVISOR_PASSWORD:
-    st.warning("Ingresá la contraseña para acceder al diagnóstico.")
+if pwd == "":
+    st.info("Ingresá la contraseña para acceder al diagnóstico.")
     st.stop()
 
+if pwd != ADVISOR_PASSWORD:
+    st.error("Contraseña incorrecta.")
+    st.stop()
+
+st.success("✅ Acceso concedido")
 # ---- Inputs ----
 st.sidebar.subheader("Perfil")
 perfil_declarado = st.sidebar.selectbox("Perfil declarado", ["Moderada", "Conservadora", "Agresiva"], index=0)
