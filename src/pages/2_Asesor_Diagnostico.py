@@ -41,17 +41,23 @@ st.sidebar.subheader("Perfil del cliente (opcional)")
 perfil_json = st.sidebar.file_uploader("Subir perfil_cliente.json", type=["json"])
 
 perfil_implicito = None
+
 if perfil_json is not None:
     try:
         perfil_data = json.loads(perfil_json.getvalue().decode("utf-8"))
         perfil_implicito = perfil_data.get("perfil_implicito")
-        st.sidebar.success(f"Perfil implícito: {perfil_implicito} (score {perfil_data.get('score')})")
-    st.subheader("Interpretación (solo asesor)")
-    interpretacion_txt = interpretacion_basica(perfil_data)
-    st.write(interpretacion_txt)
+
+        st.sidebar.success(
+            f"Perfil implícito: {perfil_implicito} (score {perfil_data.get('score')})"
+        )
+
+        st.subheader("Interpretación (solo asesor)")
+        interpretacion_txt = interpretacion_basica(perfil_data)
+        st.write(interpretacion_txt)
+
     except Exception as e:
-    
         st.sidebar.error(f"JSON inválido: {e}")
+
 
 uploaded = st.file_uploader("Subir Excel del cliente (.xlsx)", type=["xlsx"])
 
