@@ -1,31 +1,37 @@
 import os
 import json
 import tempfile
-from ui import load_css
-load_css()
 import streamlit as st
 
-st.markdown(
-    "<div class='acu-card'>"
-    "<h2 style='margin:0'>ACU — Asesor</h2>"
-    "<p class='acu-muted' style='margin:6px 0 0 0'>Diagnóstico de cartera vs perfil</p>"
-    "</div>",
-    unsafe_allow_html=True
-)
-
-st.markdown("<div class='acu-divider'></div>", unsafe_allow_html=True)
+from ui import load_css
 from ai_interpretation import interpretacion_basica
-# IMPORTS de tu proyecto (como ya los venías usando en cloud)
 from io_excel import read_portfolio_excel, write_analysis_json
 from engine_v1 import run_analysis
 from save_messages import save_messages_from_analysis_json
 from report_html import generate_html_report
 from narrative_v1 import build_client_messages
 
-st.set_page_config(page_title="Asesor - Diagnóstico", layout="wide")
-st.title("Asesor · Diagnóstico de Cartera")
-st.caption("Acceso restringido. Subí el Excel del cliente y generá el reporte en 1 click.")
+# ✅ Siempre primero
+st.set_page_config(page_title="AQ Capitals · Asesor", layout="wide")
 
+# ✅ Después CSS
+load_css()
+
+# ✅ Header AQ (solo uno)
+st.markdown("""
+<div class="aq-hero">
+  <div class="aq-hero-title">AQ Capitals · Portfolio Intelligence</div>
+  <div class="aq-hero-sub">Diagnóstico de alineación perfil vs cartera en segundos.</div>
+
+  <div class="aq-badges">
+    <span class="aq-badge">Análisis Técnico</span>
+    <span class="aq-badge">Alertas</span>
+    <span class="aq-badge">Texto listo para cliente</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.caption("Acceso restringido. Subí el Excel del cliente y generá el reporte en 1 click.")
 # ---- Password gate ----
 st.sidebar.subheader("Acceso")
 
@@ -80,6 +86,9 @@ if uploaded is not None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
             tmp.write(uploaded.getbuffer())
             tmp_path = tmp.name
+            st.markdown('<div class="aq-card">', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
         try:
             payload = read_portfolio_excel(tmp_path)
@@ -87,7 +96,45 @@ if uploaded is not None:
             # Si querés: usar perfil implícito como alerta/mismatch (sin cambiar engine por ahora)
             analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
             payload["analysis"] = analysis
+st.markdown('<div class="aq-card">', unsafe_allow_html=True)
 
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(f"""
+    <div class="aq-kpi">
+      <div class="aq-kpi-title">Perfil Detectado</div>
+      <div class="aq-kpi-value">{perfil_detectado}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"""
+    <div class="aq-kpi">
+      <div class="aq-kpi-title">Score Total</div>
+      <div class="aq-kpi-value">{score}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown(f"""
+    <div class="aq-kpi">
+      <div class="aq-kpi-title">Alineación</div>
+      <div class="aq-kpi-value">{alineacion}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown(f"""
+    <div class="aq-kpi">
+      <div class="aq-kpi-title">Concentración Top 3</div>
+      <div class="aq-kpi-value">{top3}%</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
             # Guardar outputs
             out_path = write_analysis_json(payload)
             out_dir = os.path.dirname(out_path)
