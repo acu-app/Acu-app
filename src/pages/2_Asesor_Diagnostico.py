@@ -2,7 +2,7 @@ import os
 import json
 import tempfile
 import streamlit as st
-from src.ui import load_css
+from ui import load_css
 load_css()
 from ai_interpretation import interpretacion_basica
 # IMPORTS de tu proyecto (como ya los venías usando en cloud)
