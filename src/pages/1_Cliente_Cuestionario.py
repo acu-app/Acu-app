@@ -1,6 +1,9 @@
+import streamlit as st
 import json
+
 from profile_report_html import generate_profile_html
 from ui import load_css
+st.set_page_config(page_title="AQ Capitals · Cliente", layout="wide")
 load_css()
 st.markdown("""
 <div class="aq-hero">
