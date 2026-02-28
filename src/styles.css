@@ -133,3 +133,67 @@ header { visibility: hidden; }
   border-color: #111827 !important;
   box-shadow: 0 0 0 1px #111827 !important;
 }
+
+
+/* ===== BaseWeb Inputs (Streamlit widgets) ===== */
+
+/* Text inputs / password / number: el borde suele estar en el contenedor */
+div[data-baseweb="input"] > div,
+div[data-baseweb="textarea"] > div {
+  border-radius: 10px !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: none !important;
+}
+
+/* El input adentro */
+div[data-baseweb="input"] input,
+div[data-baseweb="textarea"] textarea {
+  border-radius: 10px !important;
+  background: transparent !important;
+}
+
+/* Focus (cuando hacés click) */
+div[data-baseweb="input"] > div:focus-within,
+div[data-baseweb="textarea"] > div:focus-within {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+/* Selectbox (dropdown) */
+div[data-baseweb="select"] > div {
+  border-radius: 10px !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: none !important;
+}
+div[data-baseweb="select"] > div:focus-within {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+/* File uploader: el input real está oculto; estilizamos el contenedor visible */
+section[data-testid="stFileUploaderDropzone"] {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+}
+section[data-testid="stFileUploaderDropzone"]:hover {
+  border-color: #111827 !important;
+}
+
+/* ===== Buttons (fuerte y simple) ===== */
+.stApp button {
+  border-radius: 10px !important;
+}
+
+.stButton > button {
+  background: #111827 !important;
+  border: 1px solid #111827 !important;
+  color: #ffffff !important;
+  font-weight: 650 !important;
+  padding: 0.55rem 0.9rem !important;
+}
+
+.stButton > button:hover {
+  background: #000000 !important;
+  border-color: #000000 !important;
+}
