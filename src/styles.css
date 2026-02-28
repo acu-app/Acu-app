@@ -97,3 +97,7 @@ div[data-baseweb="select"] > div {
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
+
+/* DEBUG - si esto NO se ve, el selector no está llegando */
+button { outline: 4px solid red !important; }
+input, textarea { outline: 3px solid blue !important; }
