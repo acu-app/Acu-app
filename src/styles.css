@@ -2,36 +2,44 @@
    ACU — Minimal / Formal UI
    ========================= */
 
-/* Base font */
+/* Base */
 html, body, [class*="css"] {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif !important;
 }
 
-.stApp {
-  background: #ffffff;
-  color: #111827;
+.stApp, .stAppViewContainer, [data-testid="stAppViewContainer"] {
+  background: #ffffff !important;
+  color: #111827 !important;
 }
 
 /* Layout */
 .block-container {
-  max-width: 980px;
-  padding-top: 2.2rem;
-  padding-bottom: 3rem;
+  max-width: 980px !important;
+  padding-top: 2.2rem !important;
+  padding-bottom: 3rem !important;
 }
 
-/* Titles */
+/* Headings */
 h1, h2, h3 {
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em !important;
 }
 
-/* Subtle divider utility */
+/* Sidebar */
+section[data-testid="stSidebar"] {
+  background: #FAFAFA !important;
+  border-right: 1px solid #E5E7EB !important;
+}
+section[data-testid="stSidebar"] * {
+  color: #111827 !important;
+}
+
+/* Utilities */
 .acu-divider {
   height: 1px;
   background: #E5E7EB;
   margin: 1.25rem 0;
 }
 
-/* Card utility */
 .acu-card {
   background: #ffffff;
   border: 1px solid #E5E7EB;
@@ -41,12 +49,14 @@ h1, h2, h3 {
 }
 
 .acu-muted {
-  color: #6B7280;
+  color: #6B7280 !important;
   font-size: 0.95rem;
 }
 
 /* Buttons */
-.stButton > button {
+.stButton > button,
+button[kind="primary"],
+button[data-testid="baseButton-primary"] {
   border-radius: 10px !important;
   border: 1px solid #111827 !important;
   background: #111827 !important;
@@ -54,7 +64,10 @@ h1, h2, h3 {
   padding: 0.55rem 0.9rem !important;
   font-weight: 650 !important;
 }
-.stButton > button:hover {
+
+.stButton > button:hover,
+button[kind="primary"]:hover,
+button[data-testid="baseButton-primary"]:hover {
   background: #000000 !important;
   border-color: #000000 !important;
 }
@@ -63,7 +76,7 @@ h1, h2, h3 {
 .stTextInput input,
 .stNumberInput input,
 .stTextArea textarea,
-.stSelectbox div[data-baseweb="select"] {
+div[data-baseweb="select"] > div {
   border-radius: 10px !important;
 }
 
@@ -80,37 +93,7 @@ h1, h2, h3 {
   box-shadow: 0 0 0 1px #111827 !important;
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-  background: #FAFAFA;
-  border-right: 1px solid #E5E7EB;
-}
-
-/* Hide Streamlit chrome */
+/* Streamlit chrome off (product feel) */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
-
-/* Force theme (strong selectors) */
-.stApp, .stAppViewContainer, [data-testid="stAppViewContainer"] {
-  background: #ffffff !important;
-  color: #111827 !important;
-}
-
-section[data-testid="stSidebar"] {
-  background: #FAFAFA !important;
-  border-right: 1px solid #E5E7EB !important;
-}
-
-.stButton > button, button[kind="primary"] {
-  background: #111827 !important;
-  border: 1px solid #111827 !important;
-  color: #ffffff !important;
-  border-radius: 10px !important;
-  font-weight: 650 !important;
-}
-
-.stTextInput input, .stNumberInput input, .stTextArea textarea {
-  border: 1px solid #E5E7EB !important;
-  border-radius: 10px !important;
-}
