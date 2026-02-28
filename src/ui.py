@@ -2,7 +2,7 @@ from pathlib import Path
 import streamlit as st
 
 def load_css() -> None:
-    base_dir = Path(__file__).resolve().parent   # -> .../src
+    base_dir = Path(__file__).resolve().parent
     css_path = base_dir / "styles.css"
 
     if not css_path.exists():
@@ -26,3 +26,4 @@ def load_css() -> None:
         </style>
         <div class="acu-debug-badge">ACU CSS ON</div>
     """, unsafe_allow_html=True)
+    st.sidebar.caption(f"CSS PATH: {css_path}")
