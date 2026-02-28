@@ -26,14 +26,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 import streamlit as st
 
-st.markdown(
-    "<div class='acu-card'>"
-    "<h2 style='margin:0'>ACU — Cliente</h2>"
-    "<p class='acu-muted' style='margin:6px 0 0 0'>Cuestionario de perfil de riesgo</p>"
-    "</div>",
-    unsafe_allow_html=True
-)
-
 st.markdown("<div class='acu-divider'></div>", unsafe_allow_html=True)
 st.set_page_config(page_title="Cuestionario de Perfil", layout="centered")
 st.title("Cuestionario de Perfil de Inversión")
