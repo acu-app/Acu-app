@@ -86,3 +86,6 @@ section[data-testid="stSidebar"] {
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
+/* DEBUG: should be obvious */
+.stApp { background: #fff7cc !important; }
+
