@@ -1,47 +1,88 @@
-/* Fondo general */
+/* =========================
+   ACU — Minimal / Formal UI
+   ========================= */
+
+html, body, [class*="css"] {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+}
+
 .stApp {
-    background: linear-gradient(180deg, #ffffff 0%, #f4f6f9 100%);
+  background: #ffffff;
+  color: #111827;
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #0F172A;
-}
-
-section[data-testid="stSidebar"] * {
-    color: white !important;
-}
-
-/* Cards visuales */
 .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+  max-width: 980px;
+  padding-top: 2.2rem;
+  padding-bottom: 3rem;
 }
 
-/* Botones */
-.stButton>button {
-    background-color: #1E293B;
-    color: white;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    border: none;
-    font-weight: 500;
+h1, h2, h3 {
+  letter-spacing: -0.02em;
 }
 
-.stButton>button:hover {
-    background-color: #334155;
+p, label {
+  color: #111827;
 }
 
-/* Métricas */
-[data-testid="stMetric"] {
-    background-color: white;
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.acu-divider {
+  height: 1px;
+  background: #E5E7EB;
+  margin: 1.25rem 0;
 }
 
-/* Subheaders */
-h2 {
-    font-weight: 600;
-    letter-spacing: -0.5px;
+.acu-card {
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
+
+.acu-muted {
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.stButton > button {
+  border-radius: 10px !important;
+  border: 1px solid #111827 !important;
+  background: #111827 !important;
+  color: #ffffff !important;
+  padding: 0.55rem 0.9rem !important;
+  font-weight: 650 !important;
+}
+
+.stButton > button:hover {
+  background: #000000 !important;
+  border-color: #000000 !important;
+}
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea,
+.stSelectbox div[data-baseweb="select"] {
+  border-radius: 10px !important;
+}
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
+  border: 1px solid #E5E7EB !important;
+}
+
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stTextArea textarea:focus {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+section[data-testid="stSidebar"] {
+  background: #FAFAFA;
+  border-right: 1px solid #E5E7EB;
+}
+
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }

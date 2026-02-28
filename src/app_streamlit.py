@@ -1,3 +1,5 @@
+from pathlib import Path
+import streamlit as st
 import os
 import sys
 
@@ -8,7 +10,6 @@ if ROOT_DIR not in sys.path:
 import os
 import tempfile
 import json
-import streamlit as st
 from src.ui import load_css
 load_css()
 from src.io_excel import read_portfolio_excel, write_analysis_json
@@ -17,13 +18,15 @@ from src.save_messages import save_messages_from_analysis_json
 from src.report_html import generate_html_report
 from src.narrative_v1 import build_client_messages
 def load_css():
-    with open("src/styles.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-load_css()
+    css_path = Path("src/styles.css")
+    if css_path.exists():
+        st.markdown(
+            f"<style>{css_path.read_text()}</style>",
+            unsafe_allow_html=True
+        )
 
 st.set_page_config(page_title="ACU - Diagnóstico de Cartera", layout="wide")
-
+load_css()
 st.title("ACU · Diagnóstico de Cartera (MVP)")
 st.caption("Subí el Excel del cliente, generá diagnóstico, alertas, recomendaciones y mensajes listos.")
 
