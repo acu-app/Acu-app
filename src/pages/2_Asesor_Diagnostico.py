@@ -1,9 +1,19 @@
 import os
 import json
 import tempfile
-import streamlit as st
 from ui import load_css
 load_css()
+import streamlit as st
+
+st.markdown(
+    "<div class='acu-card'>"
+    "<h2 style='margin:0'>ACU — Asesor</h2>"
+    "<p class='acu-muted' style='margin:6px 0 0 0'>Diagnóstico de cartera vs perfil</p>"
+    "</div>",
+    unsafe_allow_html=True
+)
+
+st.markdown("<div class='acu-divider'></div>", unsafe_allow_html=True)
 from ai_interpretation import interpretacion_basica
 # IMPORTS de tu proyecto (como ya los venías usando en cloud)
 from io_excel import read_portfolio_excel, write_analysis_json
