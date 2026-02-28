@@ -90,3 +90,27 @@ section[data-testid="stSidebar"] {
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
+
+/* Force theme (strong selectors) */
+.stApp, .stAppViewContainer, [data-testid="stAppViewContainer"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+section[data-testid="stSidebar"] {
+  background: #FAFAFA !important;
+  border-right: 1px solid #E5E7EB !important;
+}
+
+.stButton > button, button[kind="primary"] {
+  background: #111827 !important;
+  border: 1px solid #111827 !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 650 !important;
+}
+
+.stTextInput input, .stNumberInput input, .stTextArea textarea {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+}
