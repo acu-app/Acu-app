@@ -2,6 +2,25 @@ import json
 from profile_report_html import generate_profile_html
 from ui import load_css
 load_css()
+st.markdown("""
+<div class="aq-hero">
+  <div class="aq-hero-title">AQ Capitals</div>
+  <div class="aq-hero-sub">
+    Diagnóstico profesional de perfil de riesgo.
+    Tecnología para asesores financieros modernos.
+  </div>
+
+  <div class="aq-badges">
+    <span class="aq-badge">Perfil Inteligente</span>
+    <span class="aq-badge">Reporte Exportable</span>
+    <span class="aq-badge">Uso Profesional</span>
+  </div>
+
+  <p>
+    Complete el cuestionario para generar un perfil validado y listo para análisis.
+  </p>
+</div>
+""", unsafe_allow_html=True)
 import streamlit as st
 
 st.markdown(
