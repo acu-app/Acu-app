@@ -2,6 +2,7 @@
    ACU — Minimal / Formal UI
    ========================= */
 
+/* Base font */
 html, body, [class*="css"] {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
 }
@@ -11,26 +12,26 @@ html, body, [class*="css"] {
   color: #111827;
 }
 
+/* Layout */
 .block-container {
   max-width: 980px;
   padding-top: 2.2rem;
   padding-bottom: 3rem;
 }
 
+/* Titles */
 h1, h2, h3 {
   letter-spacing: -0.02em;
 }
 
-p, label {
-  color: #111827;
-}
-
+/* Subtle divider utility */
 .acu-divider {
   height: 1px;
   background: #E5E7EB;
   margin: 1.25rem 0;
 }
 
+/* Card utility */
 .acu-card {
   background: #ffffff;
   border: 1px solid #E5E7EB;
@@ -44,6 +45,7 @@ p, label {
   font-size: 0.95rem;
 }
 
+/* Buttons */
 .stButton > button {
   border-radius: 10px !important;
   border: 1px solid #111827 !important;
@@ -52,12 +54,12 @@ p, label {
   padding: 0.55rem 0.9rem !important;
   font-weight: 650 !important;
 }
-
 .stButton > button:hover {
   background: #000000 !important;
   border-color: #000000 !important;
 }
 
+/* Inputs */
 .stTextInput input,
 .stNumberInput input,
 .stTextArea textarea,
@@ -78,14 +80,13 @@ p, label {
   box-shadow: 0 0 0 1px #111827 !important;
 }
 
+/* Sidebar */
 section[data-testid="stSidebar"] {
   background: #FAFAFA;
   border-right: 1px solid #E5E7EB;
 }
 
+/* Hide Streamlit chrome */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header { visibility: hidden; }
-/* DEBUG: should be obvious */
-.stApp { background: #fff7cc !important; }
-
