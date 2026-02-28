@@ -197,23 +197,51 @@ section[data-testid="stFileUploaderDropzone"]:hover {
   background: #000000 !important;
   border-color: #000000 !important;
 }
-/* ===== DEBUG (ultra obvio) ===== */
 
-/* El input de Streamlit en general (incluye password) */
+/* ===== Final: Inputs + Alerts minimal/formal ===== */
+
+/* TextInput (incluye password) */
 div[data-testid="stTextInput"] input {
-  background: #ffe4e6 !important;      /* rosa suave MUY visible */
-  border: 3px solid #111827 !important;
-  border-radius: 12px !important;
+  background: #ffffff !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
 }
 
-/* El contenedor del input (a veces el borde está acá) */
+/* El borde real suele estar en el contenedor BaseWeb */
 div[data-testid="stTextInput"] div[data-baseweb="input"] > div {
-  border: 3px solid #111827 !important;
-  border-radius: 12px !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 
-/* Caja de info (st.info) */
+div[data-testid="stTextInput"] div[data-baseweb="input"] > div:focus-within {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+/* TextArea */
+div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+/* Selectbox */
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:focus-within {
+  border-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
+/* Alerts (info/warn/error) más sobrios */
 div[data-testid="stAlert"] {
-  border: 2px solid #111827 !important;
   border-radius: 14px !important;
 }
