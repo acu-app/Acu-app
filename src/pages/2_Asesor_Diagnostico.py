@@ -82,22 +82,22 @@ uploaded = st.file_uploader("Subir Excel del cliente (.xlsx)", type=["xlsx"])
 if uploaded is not None:
     st.success("Archivo cargado. Listo para generar diagnóstico.")
 
-    if st.button("Generar diagnóstico (1 click)"):
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
-            tmp.write(uploaded.getbuffer())
-            tmp_path = tmp.name
-            st.markdown('<div class="aq-card">', unsafe_allow_html=True)
+if st.button("Generar diagnóstico (1 click)"):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+        tmp.write(uploaded.getbuffer())
+        tmp_path = tmp.name
 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="aq-card">', unsafe_allow_html=True)
 
-        try:
-            payload = read_portfolio_excel(tmp_path)
+    try:
+        payload = read_portfolio_excel(tmp_path)
 
-            # Si querés: usar perfil implícito como alerta/mismatch (sin cambiar engine por ahora)
-            analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
-            payload["analysis"] = analysis
-st.markdown('<div class="aq-card">', unsafe_allow_html=True)
+        # Si querés después va analysis, KPIs, etc.
 
+    except Exception as e:
+        st.error(f"Error al procesar el archivo: {e}")
+
+    st.markdown('</div>', unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
