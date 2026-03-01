@@ -131,13 +131,17 @@ if st.button("Generar diagnóstico (1 click)"):
         alerts = analysis.get("alerts", []) if isinstance(analysis, dict) else []
         if alerts:
             for a in alerts:
-                st.write("•", a.get("msg", str(a)))
+                clean = str(a.get("msg", str(a))) if isinstance(a, dict) else str(a)
+                clean = clean.split(" (")[0]   # corta todo lo que venga desde " ("
+                st.write("•", clean)
         else:
             st.write("Sin alertas críticas.")
 	        # === Executive Summary + Plan de acción (AQ Capitals) ===
         st.subheader("📌 Resumen Ejecutivo")
 
-        vol = float(metrics.get("VolPromedioCartera", 0))
+        vol_raw = float(metrics.get("VolPromedioCartera", 0))
+        vol_pct = vol_raw if vol_raw > 1 else vol_raw * 100   # 19.2 -> 19.2 | 0.192 -> 19.2
+        vol = vol_pct / 100.0                                 # para comparaciones internas
         score_port = float(metrics.get("ScorePromedioCartera", 0))
         top3 = float(metrics.get("ConcentracionTop3", 0))
         top1 = float(metrics.get("ConcentracionTop1", 0))
@@ -168,7 +172,7 @@ if st.button("Generar diagnóstico (1 click)"):
 
         resumen = (
             f"La cartera presenta un score promedio de {score_port:.1f} "
-            f"y volatilidad estimada de {vol*100:.1f}%. "
+            f"y volatilidad estimada de {vol_pct:.1f}%. "
             f"Concentración Top3: {top3*100:.0f}% | Top1: {top1*100:.0f}% (HHI {hhi:.2f})."
         )
 
@@ -186,7 +190,7 @@ if st.button("Generar diagnóstico (1 click)"):
 
         whatsapp = (
             f"Hola, ya revisé tu cartera. "
-            f"Hoy presenta una volatilidad estimada de {vol*100:.1f}% "
+            f"Hoy presenta una volatilidad estimada de {vol_pct:.1f}% "
             f"y concentración Top3 del {top3*100:.0f}%. "
             f"Te propongo revisar juntos ajustes para optimizar diversificación "
             f"y alinearlo con tu perfil {perfil_declarado}. "
