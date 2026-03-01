@@ -134,6 +134,82 @@ if st.button("Generar diagnóstico (1 click)"):
                 st.write("•", a.get("msg", str(a)))
         else:
             st.write("Sin alertas críticas.")
+	        # === Executive Summary + Plan de acción (AQ Capitals) ===
+        st.subheader("📌 Resumen Ejecutivo")
 
+        vol = float(metrics.get("VolPromedioCartera", 0))
+        score_port = float(metrics.get("ScorePromedioCartera", 0))
+        top3 = float(metrics.get("ConcentracionTop3", 0))
+        top1 = float(metrics.get("ConcentracionTop1", 0))
+        hhi = float(metrics.get("IndiceHerfindahl", 0))
+
+        riesgos = []
+        if top1 > 0.25:
+            riesgos.append("Concentración elevada en el activo principal (Top1 > 25%).")
+        if top3 > 0.55:
+            riesgos.append("Cartera dominada por los tres principales activos (Top3 > 55%).")
+        if hhi > 0.18:
+            riesgos.append("Diversificación estructural baja (HHI elevado).")
+        if vol > 0.18:
+            riesgos.append("Nivel de volatilidad elevado respecto a estándares conservadores.")
+
+        if not riesgos:
+            riesgos = ["No se detectan riesgos críticos bajo los umbrales actuales."]
+
+        acciones = []
+        if top1 > 0.25:
+            acciones.append("Reducir exposición del activo principal y redistribuir en posiciones complementarias.")
+        if top3 > 0.55:
+            acciones.append("Aumentar diversificación sectorial o por clase de activo.")
+        if hhi > 0.18:
+            acciones.append("Optimizar distribución para mejorar estabilidad ante escenarios adversos.")
+        if not acciones:
+            acciones = ["Mantener estrategia actual con monitoreo periódico."]
+
+        resumen = (
+            f"La cartera presenta un score promedio de {score_port:.1f} "
+            f"y volatilidad estimada de {vol*100:.1f}%. "
+            f"Concentración Top3: {top3*100:.0f}% | Top1: {top1*100:.0f}% (HHI {hhi:.2f})."
+        )
+
+        st.markdown(f"**AQ Capitals | Diagnóstico Cuantitativo:** {resumen}")
+
+        st.markdown("**Riesgos principales identificados**")
+        for r in riesgos:
+            st.write("•", r)
+
+        st.markdown("**Lineamientos estratégicos sugeridos**")
+        for a in acciones:
+            st.write("•", a)
+
+        st.subheader("✉️ Texto listo para enviar al cliente")
+
+        whatsapp = (
+            f"Hola, ya revisé tu cartera. "
+            f"Hoy presenta una volatilidad estimada de {vol*100:.1f}% "
+            f"y concentración Top3 del {top3*100:.0f}%. "
+            f"Te propongo revisar juntos ajustes para optimizar diversificación "
+            f"y alinearlo con tu perfil {perfil_declarado}. "
+            f"¿Coordinamos una llamada breve esta semana?"
+        )
+
+        email = (
+            f"Asunto: Diagnóstico de Cartera – AQ Capitals\n\n"
+            f"Estimado/a,\n\n"
+            f"A continuación, un resumen ejecutivo del análisis:\n"
+            f"- Volatilidad estimada: {vol*100:.1f}%\n"
+            f"- Concentración Top3: {top3*100:.0f}%\n"
+            f"- Concentración Top1: {top1*100:.0f}%\n"
+            f"- Índice de Diversificación (HHI): {hhi:.2f}\n\n"
+            f"Principales observaciones:\n"
+            + "\n".join([f"- {r}" for r in riesgos]) +
+            f"\n\nLineamientos sugeridos:\n"
+            + "\n".join([f"- {a}" for a in acciones]) +
+            f"\n\nQuedo a disposición para coordinar una revisión estratégica.\n\n"
+            f"Saludos,\nAQ Capitals"
+        )
+
+        st.text_area("WhatsApp", whatsapp, height=120)
+        st.text_area("Email", email, height=240)
     except Exception as e:
         st.error(f"Error al procesar el archivo: {e}")
