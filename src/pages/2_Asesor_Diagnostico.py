@@ -31,11 +31,15 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.caption("Acceso restringido. Subí el Excel del cliente y generá el reporte en 1 click.")
+st.caption(
+    "Acceso restringido. Subí el Excel del cliente y generá el reporte en 1 click.")
 # ---- Password gate ----
 st.sidebar.subheader("Acceso")
 
-pwd = (st.sidebar.text_input("Contraseña del asesor", type="password") or "").strip()
+pwd = (
+    st.sidebar.text_input(
+        "Contraseña del asesor",
+         type="password") or "").strip()
 ADVISOR_PASSWORD = (st.secrets.get("ADVISOR_PASSWORD", "") or "").strip()
 
 if ADVISOR_PASSWORD == "":
@@ -53,10 +57,13 @@ if pwd != ADVISOR_PASSWORD:
 st.success("✅ Acceso concedido")
 # ---- Inputs ----
 st.sidebar.subheader("Perfil")
-perfil_declarado = st.sidebar.selectbox("Perfil declarado", ["Moderada", "Conservadora", "Agresiva"], index=0)
+perfil_declarado = st.sidebar.selectbox(
+    "Perfil declarado", [
+        "Moderada", "Conservadora", "Agresiva"], index=0)
 
 st.sidebar.subheader("Perfil del cliente (opcional)")
-perfil_json = st.sidebar.file_uploader("Subir perfil_cliente.json", type=["json"])
+perfil_json = st.sidebar.file_uploader(
+    "Subir perfil_cliente.json", type=["json"])
 
 perfil_implicito = None
 
@@ -87,108 +94,46 @@ if st.button("Generar diagnóstico (1 click)"):
         tmp.write(uploaded.getbuffer())
         tmp_path = tmp.name
 
-    st.markdown('<div class="aq-card">', unsafe_allow_html=True)
-
     try:
         payload = read_portfolio_excel(tmp_path)
 
-        # Si querés después va analysis, KPIs, etc.
+        analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
+        payload["analysis"] = analysis
+
+        out_path = write_analysis_json(payload)
+        out_dir = os.path.dirname(out_path)
+
+        save_messages_from_analysis_json(out_path)
+        html_path = generate_html_report(out_path)
+
+        st.success(f"✅ Listo. Output generado en: {out_dir}")
+
+        perfil_implicito = analysis.get("perfil_implicito") if isinstance(analysis, dict) else None
+        if perfil_implicito and perfil_implicito != perfil_declarado:
+            st.error(
+                f"⚠️ Mismatch de perfil: declarado **{perfil_declarado}** vs implícito **{perfil_implicito}**."
+            )
+        elif perfil_implicito:
+            st.success(
+                f"✅ Perfil consistente: declarado **{perfil_declarado}** = implícito **{perfil_implicito}**."
+            )
+
+        metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+        if metrics:
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("Volatilidad", f"{metrics.get('VolPromedioCartera', 0):.1f}%")
+            col2.metric("Score", f"{metrics.get('ScorePromedioCartera', 0):.1f}")
+            col3.metric("Top 3", f"{metrics.get('ConcentracionTop3', 0)*100:.0f}%")
+            col4.metric("Top 1", f"{metrics.get('ConcentracionTop1', 0)*100:.0f}%")
+            col5.metric("HHI", f"{metrics.get('IndiceHerfindahl', 0):.2f}")
+
+        st.subheader("⚠️ Alertas")
+        alerts = analysis.get("alerts", []) if isinstance(analysis, dict) else []
+        if alerts:
+            for a in alerts:
+                st.write("•", a.get("msg", str(a)))
+        else:
+            st.write("Sin alertas críticas.")
 
     except Exception as e:
         st.error(f"Error al procesar el archivo: {e}")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.markdown(f"""
-    <div class="aq-kpi">
-      <div class="aq-kpi-title">Perfil Detectado</div>
-      <div class="aq-kpi-value">{perfil_detectado}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown(f"""
-    <div class="aq-kpi">
-      <div class="aq-kpi-title">Score Total</div>
-      <div class="aq-kpi-value">{score}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown(f"""
-    <div class="aq-kpi">
-      <div class="aq-kpi-title">Alineación</div>
-      <div class="aq-kpi-value">{alineacion}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col4:
-    st.markdown(f"""
-    <div class="aq-kpi">
-      <div class="aq-kpi-title">Concentración Top 3</div>
-      <div class="aq-kpi-value">{top3}%</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-            # Guardar outputs
-            out_path = write_analysis_json(payload)
-            out_dir = os.path.dirname(out_path)
-
-            save_messages_from_analysis_json(out_path)
-            html_path = generate_html_report(out_path)
-
-            st.success(f"✅ Listo. Output generado en: {out_dir}")
-
-            # Mostrar mismatch (si hay cuestionario)
-            if perfil_implicito and perfil_implicito != perfil_declarado:
-                st.error(f"⚠️ Mismatch de perfil: declarado **{perfil_declarado}** vs implícito **{perfil_implicito}**.")
-            elif perfil_implicito:
-                st.success(f"✅ Perfil consistente: declarado {perfil_declarado} = implícito {perfil_implicito}.")
-
-            metrics = analysis["metrics"]
-            col1, col2, col3, col4, col5 = st.columns(5)
-            col1.metric("Volatilidad", f"{metrics['VolPromedioCartera']:.1f}%")
-            col2.metric("Score", f"{metrics['ScorePromedioCartera']:.1f}")
-            col3.metric("Top 3", f"{metrics['ConcentracionTop3']*100:.0f}%")
-            col4.metric("Top 1", f"{metrics['ConcentracionTop1']*100:.0f}%")
-            col5.metric("HHI", f"{metrics['IndiceHerfindahl']:.2f}")
-
-            st.subheader("⚠️ Alertas")
-            alerts = analysis.get("alerts", [])
-            if alerts:
-                for a in alerts:
-                    st.write("•", a["msg"])
-            else:
-                st.write("Sin alertas críticas.")
-
-            st.subheader("✅ Recomendaciones")
-            recs = analysis.get("recommendations", [])
-            if recs:
-                for r in recs:
-                    st.write(f"**{r['title']}** — {r['detail']}")
-            else:
-                st.write("Sin recomendaciones automáticas.")
-
-            st.subheader("💬 Mensajes listos")
-            messages = build_client_messages(payload)
-            st.text_area("WhatsApp", messages["whatsapp"], height=180)
-            st.text_area("Email", f"Subject: {messages['email']['subject']}\n\n{messages['email']['body']}", height=240)
-
-            st.subheader("📄 Descargas")
-            with open(out_path, "r", encoding="utf-8") as f:
-                st.download_button("Descargar analysis.json", f, file_name="analysis.json")
-            with open(html_path, "r", encoding="utf-8") as f:
-                st.download_button("Descargar report.html", f, file_name="report.html")
-
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-        finally:
-            try:
-                os.remove(tmp_path)
-            except Exception:
-                pass
