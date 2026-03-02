@@ -364,7 +364,7 @@ if st.button("Generar diagnóstico (1 click)"):
 
 
     except Exception as e:
-        st.error(f"Error al procesar el archivo: {e}")
+        st.exception(e)
 st.divider()
 
 if "pdf_bytes" in st.session_state:
