@@ -222,10 +222,14 @@ if st.button("Generar diagnóstico (1 click)"):
 
     try:
         payload = read_portfolio_excel(tmp_path)
-
         analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
         payload["analysis"] = analysis
-    st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
+        st.session_state["pdf_bytes"] = build_portfolio_pdf_bytes(
+        payload,
+        analysis,
+        perfil_declarado
+        )
+        st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
 
         out_path = write_analysis_json(payload)
         out_dir = os.path.dirname(out_path)
@@ -343,19 +347,16 @@ if st.button("Generar diagnóstico (1 click)"):
         st.text_area("WhatsApp", whatsapp, height=120)
         st.text_area("Email", email, height=240)
         # ===== PDF descargable (AQ Capitals) =====
-       pdf_bytes = build_portfolio_pdf_bytes(payload, analysis, perfil_declarado)
 
-       st.download_button(
-       label="📄 Descargar reporte PDF",
-       data=pdf_bytes,
-       file_name="aq_capitals_reporte.pdf",
-       mime="application/pdf",
-)
+
+
     except Exception as e:
         st.error(f"Error al procesar el archivo: {e}")
-if "pdf_bytes" in st.session_state and st.session_state["pdf_bytes"]:
+st.divider()
+
+if "pdf_bytes" in st.session_state:
     st.download_button(
-        "📄 Descargar PDF (AQ Capitals)",
+        "📄 Descargar reporte PDF (AQ Capitals)",
         data=st.session_state["pdf_bytes"],
         file_name="AQCapitals_Diagnostico.pdf",
         mime="application/pdf",
