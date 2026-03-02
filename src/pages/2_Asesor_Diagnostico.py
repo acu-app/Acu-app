@@ -225,7 +225,7 @@ if st.button("Generar diagnóstico (1 click)"):
 
         analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
         payload["analysis"] = analysis
-	st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
+    st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
 
         out_path = write_analysis_json(payload)
         out_dir = os.path.dirname(out_path)
@@ -263,7 +263,7 @@ if st.button("Generar diagnóstico (1 click)"):
                 st.write("•", clean)
         else:
             st.write("Sin alertas críticas.")
-	        # === Executive Summary + Plan de acción (AQ Capitals) ===
+            # === Executive Summary + Plan de acción (AQ Capitals) ===
         st.subheader("📌 Resumen Ejecutivo")
 
         vol_raw = float(metrics.get("VolPromedioCartera", 0))
@@ -342,30 +342,17 @@ if st.button("Generar diagnóstico (1 click)"):
 
         st.text_area("WhatsApp", whatsapp, height=120)
         st.text_area("Email", email, height=240)
+        # ===== PDF descargable (AQ Capitals) =====
+       pdf_bytes = build_portfolio_pdf_bytes(payload, analysis, perfil_declarado)
+
+       st.download_button(
+       label="📄 Descargar reporte PDF",
+       data=pdf_bytes,
+       file_name="aq_capitals_reporte.pdf",
+       mime="application/pdf",
+)
     except Exception as e:
         st.error(f"Error al procesar el archivo: {e}")
-	        # ===== Generar PDF descargable =====
-        metrics_dict = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
-
-        pdf_bytes = build_portfolio_pdf_bytes(
-            brand_title="AQ Capitals — Reporte de Cartera",
-            perfil_declarado=perfil_declarado,
-            metrics={
-                "vol": metrics_dict.get("vol"),
-                "score": metrics_dict.get("score"),
-                "top3": metrics_dict.get("top3"),
-                "top1": metrics_dict.get("top1"),
-                "hhi": metrics_dict.get("hhi"),
-            },
-            alerts=[str(a) for a in alerts] if alerts else [],
-        )
-
-        st.download_button(
-            label="📄 Descargar reporte PDF",
-            data=pdf_bytes,
-            file_name="aq_capitals_reporte.pdf",
-            mime="application/pdf",
-        )
 if "pdf_bytes" in st.session_state and st.session_state["pdf_bytes"]:
     st.download_button(
         "📄 Descargar PDF (AQ Capitals)",
