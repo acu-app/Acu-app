@@ -2,7 +2,9 @@ import os
 import json
 import tempfile
 import streamlit as st
-
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from ui import load_css
 from ai_interpretation import interpretacion_basica
 from io_excel import read_portfolio_excel, write_analysis_json
@@ -14,7 +16,54 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
+def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    w, h = A4
 
+    y = h - 60
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, y, "AQ Capitals — Diagnóstico de Cartera")
+    y -= 30
+
+    c.setFont("Helvetica", 11)
+    c.drawString(50, y, f"Perfil declarado: {payload.get('perfil_declarado','-')}")
+    y -= 20
+
+    metrics = (analysis or {}).get("metrics", {})
+    c.drawString(50, y, f"Volatilidad: {metrics.get('VolPromedioCartera','-')}")
+    y -= 16
+    c.drawString(50, y, f"Score: {metrics.get('ScorePromedioCartera','-')}")
+    y -= 16
+    c.drawString(50, y, f"Top 3: {metrics.get('ConcentracionTop3','-')}")
+    y -= 16
+    c.drawString(50, y, f"Top 1: {metrics.get('ConcentracionTop1','-')}")
+    y -= 16
+    c.drawString(50, y, f"HHI: {metrics.get('IndiceHerfindahl','-')}")
+    y -= 26
+
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(50, y, "Alertas")
+    y -= 18
+    c.setFont("Helvetica", 10)
+
+    alerts = (analysis or {}).get("alerts", [])
+    if not alerts:
+        c.drawString(60, y, "- Sin alertas críticas.")
+        y -= 14
+    else:
+        for a in alerts[:12]:
+            msg = a.get("msg", str(a))
+            c.drawString(60, y, f"- {msg[:110]}")
+            y -= 14
+            if y < 80:
+                c.showPage()
+                y = h - 60
+                c.setFont("Helvetica", 10)
+
+    c.showPage()
+    c.save()
+    return buf.getvalue()
 
 def build_portfolio_pdf_bytes(
     brand_title,
@@ -176,6 +225,7 @@ if st.button("Generar diagnóstico (1 click)"):
 
         analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
         payload["analysis"] = analysis
+	st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
 
         out_path = write_analysis_json(payload)
         out_dir = os.path.dirname(out_path)
@@ -316,3 +366,10 @@ if st.button("Generar diagnóstico (1 click)"):
             file_name="aq_capitals_reporte.pdf",
             mime="application/pdf",
         )
+if "pdf_bytes" in st.session_state and st.session_state["pdf_bytes"]:
+    st.download_button(
+        "📄 Descargar PDF (AQ Capitals)",
+        data=st.session_state["pdf_bytes"],
+        file_name="AQCapitals_Diagnostico.pdf",
+        mime="application/pdf",
+    )
