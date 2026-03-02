@@ -193,18 +193,27 @@ perfil_json = st.sidebar.file_uploader(
 
 perfil_implicito = None
 
-if perfil_json is not None:
-    try:
-        if isinstance(perfil_json, dict):
-            perfil_data = perfil_json
+try:
+    if perfil_json is None:
+        perfil_data = {}
+    elif isinstance(perfil_json, dict):
+        perfil_data = perfil_json
+    elif hasattr(perfil_json, "getvalue"):
+        raw = perfil_json.getvalue()
+        if isinstance(raw, (bytes, bytearray)):
+            perfil_data = json.loads(raw.decode("utf-8"))
         else:
-            perfil_data = json.loads(perfil_json.getvalue().decode("utf-8"))
+            perfil_data = json.loads(raw)
+    else:
+        perfil_data = {}
 
-        perfil_implicito = perfil_data.get("perfil_implicito")
+    perfil_implicito = perfil_data.get("perfil_implicito")
 
-    except Exception as e:
-        st.sidebar.error(f"JSON inválido: {e}")
-        perfil_implicito = None
+except Exception as e:
+    st.sidebar.error(f"JSON inválido: {e}")
+    perfil_implicito = None
+
+
     except Exception as e:
         st.sidebar.error(f"JSON inválido: {e}")
 
