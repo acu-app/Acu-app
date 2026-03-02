@@ -214,8 +214,6 @@ except Exception as e:
     perfil_implicito = None
 
 
-    except Exception as e:
-        st.sidebar.error(f"JSON inválido: {e}")
 
 
 uploaded = st.file_uploader("Subir Excel del cliente (.xlsx)", type=["xlsx"])
