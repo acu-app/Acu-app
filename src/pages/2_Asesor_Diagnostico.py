@@ -195,17 +195,16 @@ perfil_implicito = None
 
 if perfil_json is not None:
     try:
-        perfil_data = json.loads(perfil_json.getvalue().decode("utf-8"))
+        if isinstance(perfil_json, dict):
+            perfil_data = perfil_json
+        else:
+            perfil_data = json.loads(perfil_json.getvalue().decode("utf-8"))
+
         perfil_implicito = perfil_data.get("perfil_implicito")
 
-        st.sidebar.success(
-            f"Perfil implícito: {perfil_implicito} (score {perfil_data.get('score')})"
-        )
-
-        st.subheader("Interpretación (solo asesor)")
-        interpretacion_txt = interpretacion_basica(perfil_data)
-        st.write(interpretacion_txt)
-
+    except Exception as e:
+        st.sidebar.error(f"JSON inválido: {e}")
+        perfil_implicito = None
     except Exception as e:
         st.sidebar.error(f"JSON inválido: {e}")
 
