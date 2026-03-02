@@ -79,30 +79,12 @@ def build_portfolio_pdf_bytes(
     y = height - 2 * cm
     line = 0.6 * cm
 
-    def draw(txt, size=11, bold=False):
+    def draw(txt, font_size=11, bold=False):
         nonlocal y
-        if bold:
-            c.setFont("Helvetica-Bold", size)
-        else:
-            c.setFont("Helvetica", size)
-
-        c.drawString(x, y, txt)
-        y -= line
-
-    draw(brand_title, 18, True)
-    y -= 0.5 * cm
-
-    draw(f"Perfil declarado: {perfil_declarado}", 12, True)
-    y -= 0.5 * cm
-
-    draw("Resumen cuantitativo", 14, True)
-
-    vol = metrics.get("vol")
-    score = metrics.get("score")
-    top3 = metrics.get("top3")
-    top1 = metrics.get("top1")
-    hhi = metrics.get("hhi")
-
+        txt = "" if txt is None else str(txt)   # <- CLAVE: fuerza texto siempre
+        c.setFont("Helvetica-Bold" if bold else "Helvetica", font_size)
+        c.drawString(margin, y, txt)
+        y -= 14
     def pct(v):
         if v is None:
             return "-"
