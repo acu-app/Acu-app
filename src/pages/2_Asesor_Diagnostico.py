@@ -53,7 +53,20 @@ def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     c.drawString(50, y, "Alertas")
     y -= 18
     c.setFont("Helvetica", 10)
+    def pct(v):
+        return f"{v*100:.1f}%" if v <= 1 else f"{v:.1f}%"
 
+    def num(v):
+        if v is None:
+            return "-"
+        return f"{v:.2f}"
+
+    # ---- DRAW ----
+    draw(f"Volatilidad: {pct(vol)}")
+    draw(f"Score: {score:.1f}")
+    draw(f"Top 3: {pct(top3)}")
+    draw(f"Top 1: {pct(top1)}")
+    draw(f"HHI: {num(hhi)}")
     alerts = (analysis or {}).get("alerts", [])
     if not alerts:
         c.drawString(60, y, "- Sin alertas críticas.")
