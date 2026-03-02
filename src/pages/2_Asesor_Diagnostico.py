@@ -224,13 +224,20 @@ if st.button("Generar diagnóstico (1 click)"):
         payload = read_portfolio_excel(tmp_path)
         analysis = run_analysis(payload, perfil_declarado=perfil_declarado)
         payload["analysis"] = analysis
-        st.session_state["pdf_bytes"] = build_portfolio_pdf_bytes(
-        payload,
-        analysis,
-        perfil_declarado
-        )
-        st.session_state["pdf_bytes"] = build_portfolio_pdf(payload, analysis)
+        alerts = []
+        if isinstance(analysis, dict):
+            alerts = analysis.get("alerts", []) or []
 
+        alerts = []
+        if isinstance(analysis, dict):
+           alerts = analysis.get("alerts", []) or []
+
+        st.session_state["pdf_bytes"] = build_portfolio_pdf_bytes(
+           payload,
+           analysis,
+           perfil_declarado,
+           alerts
+)
         out_path = write_analysis_json(payload)
         out_dir = os.path.dirname(out_path)
 
