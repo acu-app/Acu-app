@@ -17,6 +17,13 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
+    metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+
+    vol = metrics.get("VolPromedioCartera", 0)
+    score = metrics.get("ScorePromedioCartera", 0)
+    top3 = metrics.get("ConcentracionTop3", 0)
+    top1 = metrics.get("ConcentracionTop1", 0)
+    hhi = metrics.get("IndiceHerfindahl", 0)
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=A4)
     w, h = A4
