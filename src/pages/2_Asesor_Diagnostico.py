@@ -91,6 +91,28 @@ def build_portfolio_pdf_bytes(
     metrics,
     alerts,
 ):
+        # ===== Extraer metrics (para evitar NameError) =====
+    metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+
+    vol  = metrics.get("VolPromedioCartera")
+    score = metrics.get("ScorePromedioCartera")
+    top3 = metrics.get("ConcentracionTop3")
+    top1 = metrics.get("ConcentracionTop1")
+    hhi  = metrics.get("IndiceHerfindahl")
+
+    # Normalizar a float seguro
+    vol  = float(vol)  if vol  not in (None, "") else 0.0
+    score = float(score) if score not in (None, "") else 0.0
+    top3 = float(top3) if top3 not in (None, "") else 0.0
+    top1 = float(top1) if top1 not in (None, "") else 0.0
+    hhi  = float(hhi)  if hhi  not in (None, "") else 0.0
+
+    def pct(v):
+        # acepta 0.192 o 19.2
+        return f"{v*100:.1f}%" if v <= 1 else f"{v:.1f}%"
+
+    def num(v):
+        return "-" if v is None else f"{v:.2f}"
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
