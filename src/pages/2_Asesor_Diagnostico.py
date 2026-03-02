@@ -10,6 +10,83 @@ from engine_v1 import run_analysis
 from save_messages import save_messages_from_analysis_json
 from report_html import generate_html_report
 from narrative_v1 import build_client_messages
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+
+
+def build_portfolio_pdf_bytes(
+    brand_title,
+    perfil_declarado,
+    metrics,
+    alerts,
+):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    x = 2 * cm
+    y = height - 2 * cm
+    line = 0.6 * cm
+
+    def draw(txt, size=11, bold=False):
+        nonlocal y
+        if bold:
+            c.setFont("Helvetica-Bold", size)
+        else:
+            c.setFont("Helvetica", size)
+
+        c.drawString(x, y, txt)
+        y -= line
+
+    draw(brand_title, 18, True)
+    y -= 0.5 * cm
+
+    draw(f"Perfil declarado: {perfil_declarado}", 12, True)
+    y -= 0.5 * cm
+
+    draw("Resumen cuantitativo", 14, True)
+
+    vol = metrics.get("vol")
+    score = metrics.get("score")
+    top3 = metrics.get("top3")
+    top1 = metrics.get("top1")
+    hhi = metrics.get("hhi")
+
+    def pct(v):
+        if v is None:
+            return "-"
+        return f"{v*100:.1f}%"
+
+    def num(v):
+        if v is None:
+            return "-"
+        return f"{v:.2f}"
+
+    draw(f"Volatilidad: {pct(vol)}")
+    draw(f"Score: {score:.1f}" if score is not None else "Score: -")
+    draw(f"Top 3: {pct(top3)}")
+    draw(f"Top 1: {pct(top1)}")
+    draw(f"HHI: {num(hhi)}")
+
+    y -= 0.5 * cm
+    draw("Alertas", 14, True)
+
+    if alerts:
+        for a in alerts:
+            draw(f"• {a}")
+    else:
+        draw("Sin alertas críticas.")
+
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+
+
 
 # ✅ Siempre primero
 st.set_page_config(page_title="AQ Capitals · Asesor", layout="wide")
@@ -217,3 +294,25 @@ if st.button("Generar diagnóstico (1 click)"):
         st.text_area("Email", email, height=240)
     except Exception as e:
         st.error(f"Error al procesar el archivo: {e}")
+	        # ===== Generar PDF descargable =====
+        metrics_dict = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+
+        pdf_bytes = build_portfolio_pdf_bytes(
+            brand_title="AQ Capitals — Reporte de Cartera",
+            perfil_declarado=perfil_declarado,
+            metrics={
+                "vol": metrics_dict.get("vol"),
+                "score": metrics_dict.get("score"),
+                "top3": metrics_dict.get("top3"),
+                "top1": metrics_dict.get("top1"),
+                "hhi": metrics_dict.get("hhi"),
+            },
+            alerts=[str(a) for a in alerts] if alerts else [],
+        )
+
+        st.download_button(
+            label="📄 Descargar reporte PDF",
+            data=pdf_bytes,
+            file_name="aq_capitals_reporte.pdf",
+            mime="application/pdf",
+        )
