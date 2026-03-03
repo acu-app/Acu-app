@@ -22,7 +22,16 @@ from reportlab.lib.utils import ImageReader
 from src.utils.client_store import new_run_dir, save_run_artifacts, append_history, list_clients
 from datetime import datetime
 import os
+from aq.services.runs import new_run_dir, save_run_artifacts, append_history
+from aq.services.clients import list_clients  # si lo hiciste modular
 
+client_ids = list_clients()
+
+if not client_ids:
+    st.warning("No hay clientes creados.")
+    st.stop()
+
+client_id = st.selectbox("Seleccionar cliente", client_ids, key="client_id")
 def list_clients():
     base_path = "data/clients"
     if not os.path.exists(base_path):
@@ -382,7 +391,37 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     draw(f"DEBUG top_rows: {len(top_rows)}")
     y -= 10
     return buffer.getvalue()
+pdf_data = st.session_state.get("pdf_bytes")
+if pdf_data and st.button("💾 Guardar diagnóstico en historial"):
 
+    run = new_run_dir(client_id)
+    run_id = run["run_id"]
+    run_base = run["run_base"]
+
+    metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+
+    summary = {
+        "client_id": client_id,
+        "run_id": run_id,
+        "score": metrics.get("ScorePromedioCartera"),
+        "vol": metrics.get("VolPromedioCartera"),
+        "top1": metrics.get("ConcentracionTop1"),
+        "top3": metrics.get("ConcentracionTop3"),
+        "hhi": metrics.get("HHI"),
+        "alerts_count": len(alerts) if alerts else 0,
+    }
+
+    save_run_artifacts(
+        run_base=run_base,
+        excel_bytes=portfolio_file.getvalue(),
+        perfil_data=perfil_data if isinstance(perfil_data, dict) else {},
+        pdf_bytes=pdf_data,
+        summary=summary,
+    )
+
+    append_history(client_id, {"event": "RUN_SAVED", **summary})
+
+    st.success(f"Diagnóstico guardado correctamente (Run: {run_id})")
 
 
 
