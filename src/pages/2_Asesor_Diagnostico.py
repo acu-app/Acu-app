@@ -150,6 +150,85 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     draw(f"HHI: {num(hhi)}")
 
     y -= 10
+        # -------- Activos en cartera --------
+    y -= 10
+    draw("Activos en cartera", 14, True)
+    y -= 5
+
+    def _to_float(x):
+        try:
+            return float(x)
+        except:
+            return None
+
+    def _as_list(maybe):
+        if maybe is None:
+            return []
+        if isinstance(maybe, list):
+            return maybe
+        if isinstance(maybe, dict):
+            # a veces viene {"items":[...]} o {"activos":[...]}
+            for k in ("items", "activos", "positions", "holdings", "data"):
+                if k in maybe and isinstance(maybe[k], list):
+                    return maybe[k]
+            # si no, lo envolvemos
+            return [maybe]
+        return []
+
+    # Intentamos encontrar dónde vienen los activos
+    candidates = []
+    for key in ("activos", "positions", "holdings", "portfolio", "cartera", "InputActivos"):
+        if isinstance(payload, dict) and key in payload:
+            candidates = _as_list(payload.get(key))
+            if candidates:
+                break
+
+    # También intentamos dentro de payload["data"] si existiera
+    if not candidates and isinstance(payload, dict) and isinstance(payload.get("data"), dict):
+        for key in ("activos", "positions", "holdings", "portfolio", "cartera"):
+            if key in payload["data"]:
+                candidates = _as_list(payload["data"].get(key))
+                if candidates:
+                    break
+
+    # Normalizamos filas
+    rows = []
+    for it in candidates:
+        if isinstance(it, dict):
+            nombre = it.get("nombre") or it.get("activo") or it.get("ticker") or it.get("symbol") or it.get("name") or "Activo"
+            peso = (
+                it.get("peso")
+                or it.get("weight")
+                or it.get("ponderacion")
+                or it.get("%")
+                or it.get("pct")
+            )
+            peso_f = _to_float(peso)
+            monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
+            monto_f = _to_float(monto)
+            moneda = it.get("moneda") or it.get("currency") or ""
+            rows.append((str(nombre), peso_f, monto_f, str(moneda)))
+        else:
+            rows.append((str(it), None, None, ""))
+
+    # Orden: por peso desc si existe
+    rows.sort(key=lambda r: (r[1] is not None, r[1] or 0), reverse=True)
+
+    if not rows:
+        draw("No se encontraron activos en el payload.")
+    else:
+        # mostramos hasta 25 para no romper el layout
+        max_items = 25
+        for i, (nombre, peso_f, monto_f, moneda) in enumerate(rows[:max_items], start=1):
+            parts = [f"{i}. {nombre}"]
+            if peso_f is not None:
+                parts.append(f"({pct(peso_f)})")  # si viene 0.12 => 12.0%
+            if monto_f is not None:
+                parts.append(f"- {monto_f:,.2f} {moneda}".strip())
+            draw(" ".join(parts))
+
+        if len(rows) > max_items:
+            draw(f"... y {len(rows) - max_items} activos más.")
 
     # -------- Alertas --------
     draw("Alertas detectadas", 14, True)
