@@ -283,7 +283,75 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
 
     c.save()
     buffer.seek(0)
+    # -------- Pie Chart Distribución por Peso --------
+    import io
+    import matplotlib.pyplot as plt
+    from reportlab.lib.utils import ImageReader
+
+    # Helper interno para generar el gráfico
+    def _make_pie_chart_png(labels, values, title="Distribución por peso (Top 10)"):
+        data = [(l, v) for l, v in zip(labels, values) if v is not None and v > 0]
+        if not data:
+            return None
+
+        labels, values = zip(*data)
+
+        fig, ax = plt.subplots(figsize=(4.5, 4.5), dpi=200)
+        ax.pie(values, autopct="%1.1f%%", startangle=90)
+        ax.axis("equal")
+        ax.set_title(title)
+
+        ax.legend(labels, loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=7)
+
+        buf = io.BytesIO()
+        plt.tight_layout()
+        fig.savefig(buf, format="png", bbox_inches="tight")
+        plt.close(fig)
+        buf.seek(0)
+        return buf
+
+    # Tomamos Top 10 por peso
+    top_rows = [r for r in rows if r[1] is not None and r[1] > 0][:10]
+
+    if top_rows:
+        labels = [r[0] for r in top_rows]
+        values = [r[1] for r in top_rows]
+
+        pie_buf = _make_pie_chart_png(labels, values)
+
+        if pie_buf:
+            draw("Distribución por peso (Top 10)", 14, True)
+            y -= 10
+
+            img = ImageReader(pie_buf)
+            img_w = 320
+            img_h = 240
+
+            # Si no entra en la página, salto
+            if y - img_h < 60:
+                c.showPage()
+                y = height - margin
+
+            c.drawImage(
+                img,
+                margin,
+                y - img_h,
+                width=img_w,
+                height=img_h,
+                preserveAspectRatio=True,
+                mask="auto",
+            )
+
+            y -= (img_h + 20)
+    else:
+        draw("Distribución por peso: sin datos suficientes.")
+        y -= 10
     return buffer.getvalue()
+
+
+
+
+
 
 
 
