@@ -598,7 +598,7 @@ if "pdf_bytes" in st.session_state:
         mime="application/pdf",
     )
 
-
+pdf_bytes = None
 if client_id and portfolio_file is not None and pdf_bytes is not None:
     run = new_run_dir(client_id)  # crea /runs/<run_id>/
     run_id = run["run_id"]
