@@ -599,14 +599,18 @@ if st.button("Generar diagnóstico (1 click)"):
         st.exception(e)
 st.divider()
 
-if "pdf_bytes" in st.session_state:
+pdf_data = st.session_state.get("pdf_bytes")
+
+if isinstance(pdf_data, bytes) and len(pdf_data) > 0:
     st.download_button(
         "📄 Descargar reporte PDF (AQ Capitals)",
-        data=st.session_state["pdf_bytes"],
+        data=pdf_data,
         file_name="AQCapitals_Diagnostico.pdf",
         mime="application/pdf",
+        key="download_pdf",
     )
-
+else:
+    st.info("Primero generá el reporte para habilitar la descarga.")
 if (
     client_id
     and portfolio_file is not None
@@ -636,5 +640,6 @@ if (
         summary=summary,
     )
     append_history(client_id, {"event": "diagnostico_guardado", **summary})
-
+if pdf_bytes is not None:
+    st.session_state["pdf_bytes"] = bytes(pdf_bytes)
     st.success(f"Diagnóstico guardado para {client_id} (run: {run_id})")
