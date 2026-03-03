@@ -76,3 +76,32 @@ def save_uploaded_bytes(dst_path: str, b: bytes) -> None:
     os.makedirs(os.path.dirname(dst_path), exist_ok=True)
     with open(dst_path, "wb") as f:
         f.write(b)
+import os
+import json
+from datetime import datetime
+
+def new_run_dir(client_id: str) -> dict:
+    paths = ensure_client_dirs(client_id)
+    run_id = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    run_base = os.path.join(paths["base"], "runs", run_id)
+    os.makedirs(run_base, exist_ok=True)
+    return {"run_id": run_id, "run_base": run_base}
+
+def save_run_artifacts(run_base: str, excel_bytes: bytes = None, perfil_data: dict = None, pdf_bytes: bytes = None, summary: dict = None) -> None:
+    os.makedirs(run_base, exist_ok=True)
+
+    if excel_bytes is not None:
+        with open(os.path.join(run_base, "portfolio.xlsx"), "wb") as f:
+            f.write(excel_bytes)
+
+    if perfil_data is not None:
+        with open(os.path.join(run_base, "perfil.json"), "w", encoding="utf-8") as f:
+            json.dump(perfil_data, f, ensure_ascii=False, indent=2)
+
+    if pdf_bytes is not None:
+        with open(os.path.join(run_base, "reporte.pdf"), "wb") as f:
+            f.write(pdf_bytes)
+
+    if summary is not None:
+        with open(os.path.join(run_base, "summary.json"), "w", encoding="utf-8") as f:
+            json.dump(summary, f, ensure_ascii=False, indent=2)
