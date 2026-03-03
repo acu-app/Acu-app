@@ -22,8 +22,6 @@ from reportlab.lib.utils import ImageReader
 from src.utils.client_store import new_run_dir, save_run_artifacts, append_history, list_clients
 from datetime import datetime
 import os
-from aq.services.runs import new_run_dir, save_run_artifacts, append_history
-from aq.services.clients import list_clients  # si lo hiciste modular
 
 client_ids = list_clients()
 
