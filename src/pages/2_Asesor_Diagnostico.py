@@ -210,6 +210,21 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     if not candidates:
         candidates = []
 
+    def _to_float(x):
+        if x is None:
+            return None
+        try:
+            if isinstance(x, str):
+                s = x.strip().replace("%", "").replace(",", ".")
+                if s == "" or s.lower() in ("nan", "none", "-"):
+                    return None
+                return float(s)
+            return float(x)
+        except Exception:
+            return None
+
+
+
     for it in candidates:
         if isinstance(it, dict):
             nombre = _pick_name(it)
@@ -221,18 +236,7 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
                 or it.get("%")
                 or it.get("pct")
             )
-        def _to_float(x):
-            if x is None:
-                return None
-            try:
-                if isinstance(x, str):
-                    s = x.strip().replace("%", "").replace(",", ".")
-                    if s == "" or s.lower() in ("nan", "none", "-"):
-                        return None
-                    return float(s)
-                return float(x)
-            except Exception:
-                return None
+
             peso_f = _to_float(peso)
 
             monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
@@ -242,14 +246,6 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
             rows.append((str(nombre), peso_f, monto_f, str(moneda)))
         else:
             rows.append((str(it), None, None, ""))
-
-
-
-
-
-
-
-
 
     
     # Orden: por peso desc si existe
