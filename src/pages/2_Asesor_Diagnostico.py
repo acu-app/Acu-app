@@ -177,6 +177,31 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
         return "Activo"
 
     rows = []
+    # ---- sacar lista de activos desde payload ----
+    candidates = []
+
+    if isinstance(payload, dict):
+    # probá varias llaves típicas
+        for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
+        v = payload.get(k)
+        if isinstance(v, list) and v:
+            candidates = v
+            break
+
+    # fallback: si no está directo, a veces viene en payload["portfolio"]
+    if not candidates:
+        p = payload.get("portfolio")
+        if isinstance(p, dict):
+            for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
+                v = p.get(k)
+                if isinstance(v, list) and v:
+                    candidates = v
+                    break
+
+# si sigue vacío, al menos no rompe
+    if not candidates:
+        candidates = []
+    
 
     for it in candidates:
         if isinstance(it, dict):
