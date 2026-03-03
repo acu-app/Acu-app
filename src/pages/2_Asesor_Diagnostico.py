@@ -16,6 +16,9 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
+ import io
+ import matplotlib.pyplot as plt
+ from reportlab.lib.utils import ImageReader
 def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
 
@@ -284,9 +287,6 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     c.save()
     buffer.seek(0)
     # -------- Pie Chart Distribución por Peso --------
-    import io
-    import matplotlib.pyplot as plt
-    from reportlab.lib.utils import ImageReader
 
     # Helper interno para generar el gráfico
     def _make_pie_chart_png(labels, values, title="Distribución por peso (Top 10)"):
