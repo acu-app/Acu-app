@@ -640,6 +640,6 @@ if (
         summary=summary,
     )
     append_history(client_id, {"event": "diagnostico_guardado", **summary})
-if pdf_bytes is not None:
+if st.session_state.get("pdf_bytes") is not None:
     st.session_state["pdf_bytes"] = bytes(pdf_bytes)
     st.success(f"Diagnóstico guardado para {client_id} (run: {run_id})")
