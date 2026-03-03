@@ -646,7 +646,6 @@ if st.button("Generar diagnóstico (1 click)"):
         st.exception(e)
 st.divider()
 
-pdf_data = st.session_state.get("pdf_bytes")
 
 if isinstance(pdf_data, bytes) and len(pdf_data) > 0:
     st.download_button(
@@ -688,3 +687,12 @@ if (
     )
     append_history(client_id, {"event": "diagnostico_guardado", **summary})
     st.success(f"Diagnóstico guardado para {client_id} (run: {run_id})")
+pdf_data = st.session_state.get("pdf_bytes")
+
+st.write("DEBUG", {
+    "client_id": st.session_state.get("diagnostico_client_id"),
+    "portfolio_uploaded": portfolio_file is not None,
+    "pdf_key_exists": "pdf_bytes" in st.session_state,
+    "pdf_type": str(type(pdf_data)),
+    "pdf_len": len(pdf_data) if isinstance(pdf_data, (bytes, bytearray)) else None,
+})
