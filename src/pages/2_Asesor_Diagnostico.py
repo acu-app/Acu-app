@@ -85,78 +85,89 @@ def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     c.save()
     return buf.getvalue()
 
-def build_portfolio_pdf_bytes(
-    brand_title,
-    perfil_declarado,
-    metrics,
-    alerts,
-):
-        # ===== Extraer metrics (para evitar NameError) =====
-    metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    import io
 
-    vol  = metrics.get("VolPromedioCartera")
-    score = metrics.get("ScorePromedioCartera")
-    top3 = metrics.get("ConcentracionTop3")
-    top1 = metrics.get("ConcentracionTop1")
-    hhi  = metrics.get("IndiceHerfindahl")
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
 
-    # Normalizar a float seguro
-    vol  = float(vol)  if vol  not in (None, "") else 0.0
-    score = float(score) if score not in (None, "") else 0.0
-    top3 = float(top3) if top3 not in (None, "") else 0.0
-    top1 = float(top1) if top1 not in (None, "") else 0.0
-    hhi  = float(hhi)  if hhi  not in (None, "") else 0.0
+    width, height = A4
+    margin = 50
+    y = height - margin
 
+    # -------- Helper draw --------
+    def draw(txt, font_size=11, bold=False):
+        nonlocal y
+        txt = "" if txt is None else str(txt)
+        c.setFont("Helvetica-Bold" if bold else "Helvetica", font_size)
+        c.drawString(margin, y, txt)
+        y -= 18
+
+    # -------- Helpers format --------
     def pct(v):
-        # acepta 0.192 o 19.2
+        if v is None:
+            return "-"
+        try:
+            v = float(v)
+        except:
+            return "-"
         return f"{v*100:.1f}%" if v <= 1 else f"{v:.1f}%"
 
     def num(v):
-        return "-" if v is None else f"{v:.2f}"
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-
-    x = 2 * cm
-    y = height - 2 * cm
-    line = 0.6 * cm
-
-    def draw(txt, font_size=11, bold=False):
-        nonlocal y
-        txt = "" if txt is None else str(txt)   # <- CLAVE: fuerza texto siempre
-        c.setFont("Helvetica-Bold" if bold else "Helvetica", font_size)
-        c.drawString(margin, y, txt)
-        y -= 14
-    def pct(v):
         if v is None:
             return "-"
-        return f"{v*100:.1f}%"
-
-    def num(v):
-        if v is None:
+        try:
+            return f"{float(v):.2f}"
+        except:
             return "-"
-        return f"{v:.2f}"
+
+    # -------- Extraer metrics --------
+    metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
+
+    vol = metrics.get("VolPromedioCartera")
+    score = metrics.get("ScorePromedioCartera")
+    top3 = metrics.get("ConcentracionTop3")
+    top1 = metrics.get("ConcentracionTop1")
+    hhi = metrics.get("IndiceHerfindahl")
+
+    # -------- Título --------
+    draw("AQ Capitals — Diagnóstico de Cartera", 18, True)
+    y -= 10
+
+    draw(f"Perfil declarado: {perfil_declarado}", 12)
+    y -= 10
+
+    # -------- Métricas --------
+    draw("Resumen cuantitativo", 14, True)
+    y -= 5
 
     draw(f"Volatilidad: {pct(vol)}")
-    draw(f"Score: {score:.1f}" if score is not None else "Score: -")
+    draw(f"Score: {num(score)}")
     draw(f"Top 3: {pct(top3)}")
     draw(f"Top 1: {pct(top1)}")
     draw(f"HHI: {num(hhi)}")
 
-    y -= 0.5 * cm
-    draw("Alertas", 14, True)
+    y -= 10
+
+    # -------- Alertas --------
+    draw("Alertas detectadas", 14, True)
+    y -= 5
 
     if alerts:
         for a in alerts:
-            draw(f"• {a}")
+            if isinstance(a, dict):
+                msg = a.get("msg") or str(a)
+            else:
+                msg = str(a)
+            draw(f"- {msg}")
     else:
-        draw("Sin alertas críticas.")
+        draw("No se detectaron alertas críticas.")
 
-    c.showPage()
     c.save()
     buffer.seek(0)
     return buffer.getvalue()
-
 
 
 
