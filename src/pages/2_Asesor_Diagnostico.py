@@ -16,9 +16,9 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
- import io
- import matplotlib.pyplot as plt
- from reportlab.lib.utils import ImageReader
+import io
+import matplotlib.pyplot as plt
+from reportlab.lib.utils import ImageReader
 def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
 
