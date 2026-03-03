@@ -21,6 +21,15 @@ import matplotlib.pyplot as plt
 from reportlab.lib.utils import ImageReader
 from src.utils.client_store import new_run_dir, save_run_artifacts, append_history, list_clients
 from datetime import datetime
+# Defaults para evitar NameError en reruns
+client_id = None
+portfolio_file = None
+perfil_data = None
+analysis = {}
+alerts = []
+
+if "pdf_bytes" not in st.session_state:
+    st.session_state["pdf_bytes"] = None
 def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
 
