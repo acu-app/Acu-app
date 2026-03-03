@@ -180,51 +180,56 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     # ---- sacar lista de activos desde payload ----
     candidates = []
 
+    candidates = []
+
     if isinstance(payload, dict):
-    # probá varias llaves típicas
+        # probá varias llaves típicas
         for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
-        v = payload.get(k)
-        if isinstance(v, list) and v:
-            candidates = v
-            break
-
-    # fallback: si no está directo, a veces viene en payload["portfolio"]
-
-# fallback: si no está directo, a veces viene en payload["portfolio"]
-if not candidates:
-    p = payload.get("portfolio")
-    if isinstance(p, dict):
-        for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
-            v = p.get(k)
+            v = payload.get(k)
             if isinstance(v, list) and v:
                 candidates = v
                 break
 
+        # fallback: si no está directo, a veces viene en payload["portfolio"]
+        if not candidates:
+            p = payload.get("portfolio")
+            if isinstance(p, dict):
+                for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
+                    v = p.get(k)
+                    if isinstance(v, list) and v:
+                        candidates = v
+                        break
+
+    # si sigue vacío, al menos no rompe
+    if not candidates:
+        candidates = []
+
+
+
 # si sigue vacío, al menos no rompe
-if not candidates:
-    candidates = []
+    if not candidates:
+        candidates = []
 
-for it in candidates:
-    if isinstance(it, dict):
-        nombre = _pick_name(it)
+    for it in candidates:
+        if isinstance(it, dict):
+            nombre = _pick_name(it)
 
-        peso = (
-            it.get("peso")
-            or it.get("weight")
-            or it.get("ponderacion")
-            or it.get("%")
-            or it.get("pct")
-        )
-        peso_f = _to_float(peso)
+            peso = (
+                it.get("peso")
+                or it.get("weight")
+                or it.get("ponderacion")
+                or it.get("%")
+                or it.get("pct")
+            )
+            peso_f = _to_float(peso)
 
-        monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
-        monto_f = _to_float(monto)
+            monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
+            monto_f = _to_float(monto)
 
-        moneda = it.get("moneda") or it.get("currency") or ""
-        rows.append((str(nombre), peso_f, monto_f, str(moneda)))
-    else:
-        rows.append((str(it), None, None, ""))
-
+            moneda = it.get("moneda") or it.get("currency") or ""
+            rows.append((str(nombre), peso_f, monto_f, str(moneda)))
+        else:
+            rows.append((str(it), None, None, ""))
 
 
 
@@ -242,11 +247,11 @@ for it in candidates:
         draw("No se encontraron activos en el payload.")
     else:
         # mostramos hasta 25 para no romper el layout
-        max_items = 25
+        max_items = 25  
         for i, (nombre, peso_f, monto_f, moneda) in enumerate(rows[:max_items], start=1):
             parts = [f"{i}. {nombre}"]
             if peso_f is not None:
-                parts.append(f"({pct(peso_f)})")  # si viene 0.12 => 12.0%
+                parts.append(f"({pct(peso_f)})")
             if monto_f is not None:
                 parts.append(f"- {monto_f:,.2f} {moneda}".strip())
             draw(" ".join(parts))
@@ -260,18 +265,17 @@ for it in candidates:
 
     if alerts:
         for a in alerts:
-            if isinstance(a, dict):
+            if isinstance(a, dict): 
                 msg = a.get("msg") or str(a)
             else:
                 msg = str(a)
             draw(f"- {msg}")
     else:
-        draw("No se detectaron alertas críticas.")
+        draw("No se detectaron alertas críticas.")   
 
     c.save()
     buffer.seek(0)
     return buffer.getvalue()
-
 
 
 
