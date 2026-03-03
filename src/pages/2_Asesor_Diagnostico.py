@@ -598,13 +598,16 @@ if "pdf_bytes" in st.session_state:
         mime="application/pdf",
     )
 
-pdf_bytes = None
-if client_id and portfolio_file is not None and pdf_bytes is not None:
+if (
+    client_id
+    and portfolio_file is not None
+    and "pdf_bytes" in st.session_state
+    and st.session_state["pdf_bytes"] is not None
+):
     run = new_run_dir(client_id)  # crea /runs/<run_id>/
     run_id = run["run_id"]
     run_base = run["run_base"]
 
-    # summary (KPIs chicos para ver rápido)
     metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
     summary = {
         "client_id": client_id,
@@ -620,10 +623,9 @@ if client_id and portfolio_file is not None and pdf_bytes is not None:
         run_base=run_base,
         excel_bytes=portfolio_file.getvalue(),
         perfil_data=perfil_data if isinstance(perfil_data, dict) else None,
-        pdf_bytes=pdf_bytes,
+        pdf_bytes=st.session_state["pdf_bytes"],
         summary=summary,
     )
-
     append_history(client_id, {"event": "diagnostico_guardado", **summary})
 
     st.success(f"Diagnóstico guardado para {client_id} (run: {run_id})")
