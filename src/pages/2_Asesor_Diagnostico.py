@@ -189,44 +189,51 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
             break
 
     # fallback: si no está directo, a veces viene en payload["portfolio"]
- if not candidates:
-     p = payload.get("portfolio")
-     if isinstance(p, dict):
-         for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
-             v = p.get(k)
-             if isinstance(v, list) and v:
-                 candidates = v
-                 break
+
+# fallback: si no está directo, a veces viene en payload["portfolio"]
+if not candidates:
+    p = payload.get("portfolio")
+    if isinstance(p, dict):
+        for k in ("activos", "assets", "positions", "posiciones", "holdings", "tenencias"):
+            v = p.get(k)
+            if isinstance(v, list) and v:
+                candidates = v
+                break
 
 # si sigue vacío, al menos no rompe
- if not candidates:
-     candidates = []
-    
+if not candidates:
+    candidates = []
 
- for it in candidates:
-     if isinstance(it, dict):
+for it in candidates:
+    if isinstance(it, dict):
+        nombre = _pick_name(it)
 
-            nombre = _pick_name(it)
+        peso = (
+            it.get("peso")
+            or it.get("weight")
+            or it.get("ponderacion")
+            or it.get("%")
+            or it.get("pct")
+        )
+        peso_f = _to_float(peso)
 
-            peso = (
-                it.get("peso")
-                or it.get("weight")
-                or it.get("ponderacion")
-                or it.get("%")
-                or it.get("pct")
-            )
+        monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
+        monto_f = _to_float(monto)
 
-            peso_f = _to_float(peso)
+        moneda = it.get("moneda") or it.get("currency") or ""
+        rows.append((str(nombre), peso_f, monto_f, str(moneda)))
+    else:
+        rows.append((str(it), None, None, ""))
 
-            monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
-            monto_f = _to_float(monto)
 
-            moneda = it.get("moneda") or it.get("currency") or ""
 
-            rows.append((str(nombre), peso_f, monto_f, str(moneda)))
 
-        else:
-            rows.append((str(it), None, None, ""))
+
+
+
+
+
+
     
     # Orden: por peso desc si existe
     rows.sort(key=lambda r: (r[1] is not None, r[1] or 0), reverse=True)
