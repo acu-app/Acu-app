@@ -21,15 +21,36 @@ import matplotlib.pyplot as plt
 from reportlab.lib.utils import ImageReader
 from src.utils.client_store import new_run_dir, save_run_artifacts, append_history, list_clients
 from datetime import datetime
+import os
+
+def list_clients():
+    base_path = "data/clients"
+    if not os.path.exists(base_path):
+        return []
+    return sorted([
+        name for name in os.listdir(base_path)
+        if os.path.isdir(os.path.join(base_path, name))
+    ])
 # Defaults para evitar NameError en reruns
 client_id = None
 portfolio_file = None
 perfil_data = None
 analysis = {}
 alerts = []
+client_ids = list_clients()
+
+if not client_ids:
+    st.warning("No hay clientes creados todavía.")
+    st.stop()
+
+client_id = st.selectbox("Seleccionar cliente", client_ids, key="client_id")
 
 if "pdf_bytes" not in st.session_state:
     st.session_state["pdf_bytes"] = None
+if "client_id" not in st.session_state:
+    st.session_state["client_id"] = None
+
+
 def build_portfolio_pdf(payload: dict, analysis: dict) -> bytes:
     metrics = analysis.get("metrics", {}) if isinstance(analysis, dict) else {}
 
