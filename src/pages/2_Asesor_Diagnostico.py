@@ -151,51 +151,38 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
 
     y -= 10
         # -------- Activos en cartera --------
+        # -------- Activos en cartera --------
     y -= 10
     draw("Activos en cartera", 14, True)
     y -= 5
 
-    def _to_float(x):
-        try:
-            return float(x)
-        except:
-            return None
+    def _pick_name(d: dict) -> str:
+        for k in (
+            "nombre", "activo", "instrumento", "especie", "descripcion",
+            "ticker", "symbol", "name", "security", "asset"
+        ):
+            v = d.get(k)
+            if v:
+                s = str(v).strip()
+                if s.lower() not in ("nan", "none", "-"):
+                    return s
 
-    def _as_list(maybe):
-        if maybe is None:
-            return []
-        if isinstance(maybe, list):
-            return maybe
-        if isinstance(maybe, dict):
-            # a veces viene {"items":[...]} o {"activos":[...]}
-            for k in ("items", "activos", "positions", "holdings", "data"):
-                if k in maybe and isinstance(maybe[k], list):
-                    return maybe[k]
-            # si no, lo envolvemos
-            return [maybe]
-        return []
+        # fallback: primer valor util
+        for v in d.values():
+            if v:
+                s = str(v).strip()
+                if s.lower() not in ("nan", "none", "-") and len(s) < 80:
+                    return s
 
-    # Intentamos encontrar dónde vienen los activos
-    candidates = []
-    for key in ("activos", "positions", "holdings", "portfolio", "cartera", "InputActivos"):
-        if isinstance(payload, dict) and key in payload:
-            candidates = _as_list(payload.get(key))
-            if candidates:
-                break
+        return "Activo"
 
-    # También intentamos dentro de payload["data"] si existiera
-    if not candidates and isinstance(payload, dict) and isinstance(payload.get("data"), dict):
-        for key in ("activos", "positions", "holdings", "portfolio", "cartera"):
-            if key in payload["data"]:
-                candidates = _as_list(payload["data"].get(key))
-                if candidates:
-                    break
-
-    # Normalizamos filas
     rows = []
+
     for it in candidates:
         if isinstance(it, dict):
-            nombre = it.get("nombre") or it.get("activo") or it.get("ticker") or it.get("symbol") or it.get("name") or "Activo"
+
+            nombre = _pick_name(it)
+
             peso = (
                 it.get("peso")
                 or it.get("weight")
@@ -203,14 +190,19 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
                 or it.get("%")
                 or it.get("pct")
             )
+
             peso_f = _to_float(peso)
+
             monto = it.get("monto") or it.get("amount") or it.get("valor") or it.get("value")
             monto_f = _to_float(monto)
+
             moneda = it.get("moneda") or it.get("currency") or ""
+
             rows.append((str(nombre), peso_f, monto_f, str(moneda)))
+
         else:
             rows.append((str(it), None, None, ""))
-
+    
     # Orden: por peso desc si existe
     rows.sort(key=lambda r: (r[1] is not None, r[1] or 0), reverse=True)
 
