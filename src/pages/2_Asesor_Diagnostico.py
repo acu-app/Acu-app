@@ -287,7 +287,8 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     c.save()
     buffer.seek(0)
     # -------- Pie Chart Distribución por Peso --------
-
+    draw(f"DEBUG rows: {len(rows)}")
+    y -= 10
     # Helper interno para generar el gráfico
     def _make_pie_chart_png(labels, values, title="Distribución por peso (Top 10)"):
         data = [(l, v) for l, v in zip(labels, values) if v is not None and v > 0]
@@ -346,6 +347,8 @@ def build_portfolio_pdf_bytes(payload, analysis, perfil_declarado, alerts):
     else:
         draw("Distribución por peso: sin datos suficientes.")
         y -= 10
+    draw(f"DEBUG top_rows: {len(top_rows)}")
+    y -= 10
     return buffer.getvalue()
 
 
