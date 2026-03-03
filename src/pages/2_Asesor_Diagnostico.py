@@ -25,19 +25,8 @@ import os
 
 client_ids = list_clients()
 
-if not client_ids:
-    st.warning("No hay clientes creados.")
-    st.stop()
 
-client_id = st.selectbox("Seleccionar cliente", client_ids, key="client_id")
-def list_clients():
-    base_path = "data/clients"
-    if not os.path.exists(base_path):
-        return []
-    return sorted([
-        name for name in os.listdir(base_path)
-        if os.path.isdir(os.path.join(base_path, name))
-    ])
+
 # Defaults para evitar NameError en reruns
 client_id = None
 portfolio_file = None
